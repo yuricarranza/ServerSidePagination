@@ -1,0 +1,29 @@
+﻿@section Styles{
+    <link rel="stylesheet" href="//cdn.datatables.net/2.0.3/css/dataTables.dataTables.min.css" />
+}
+<table id="myTable">
+    <thead>
+        <tr>
+            <th>First name</th>
+            <th>Last name</th>
+        </tr>
+    </thead>
+</table>
+
+
+@section Scripts{
+    <script src="//cdn.datatables.net/2.0.3/js/dataTables.min.js"></script>
+    <script>
+        $('#myTable').DataTable({
+            serverSide: true,
+            ajax: {
+                url: '/Person/GetPaginatedPeople',
+                dataSrc: 'data'
+            },
+            columns: [
+                { data: 'firstName' },
+                { data: 'lastName'}
+            ]
+        });
+    </script>
+}
