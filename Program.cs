@@ -1,3 +1,5 @@
+using PaginationDemo.Repository;
+
 namespace PaginationDemo
 {
     public class Program
@@ -8,6 +10,7 @@ namespace PaginationDemo
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddTransient<IPersonRepository, PersonRepository>();
 
             var app = builder.Build();
 

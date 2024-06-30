@@ -2,33 +2,31 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using PaginationDemo.Models;
+using PaginationDemo.Repository;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PaginationDemo.Controllers
 {
     public class PersonController : Controller
     {
-        private readonly IConfiguration _configuration;
-        public PersonController(IConfiguration configuration)
+        private readonly IPersonRepository _personRepository;
+        public PersonController(IPersonRepository personRepository)
         {
-            _configuration = configuration;
+            _personRepository = personRepository;
         }
         public IActionResult Index()
         {                                    
             return View();
         }
 
-        public async Task<JsonResult> GetPaginatedPeople(int draw = 1, int start = 0, int length = 10) {
-            string sql = $"select FirstName, LastName from Person.Person ORDER BY BusinessEntityID OFFSET {start} ROWS FETCH NEXT {length} ROWS ONLY;";
-            string sqlCount = $"select count(1) from Person.Person;";
-            using var connection = new SqlConnection(_configuration.GetConnectionString("DefaultDb"));
-            var people = await connection.QueryAsync<Person>(sql);
-            var peopleCount = await connection.ExecuteScalarAsync<int>(sqlCount);
+        public async Task<JsonResult> GetPaginatedPeople(int draw = 1, int start = 0, int length = 10) 
+        {
+            var peopleQuantity = await _personRepository.GetPeopleCount();
             var returnData = new
             {
-                data = people,
-                recordsTotal = peopleCount,
-                recordsFiltered = peopleCount
+                data = await _personRepository.GetPaginatedPeople(start, length),
+                recordsTotal = peopleQuantity,
+                recordsFiltered = peopleQuantity
             };
             return Json(returnData);
         }
